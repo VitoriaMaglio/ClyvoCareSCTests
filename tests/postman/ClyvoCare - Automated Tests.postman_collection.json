@@ -1,0 +1,729 @@
+{
+  "info": {
+    "_postman_id": "d7e9930f-1107-4b6d-a524-db11b20f23f1",
+    "name": "ClyvoCare - Automated Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "47850383"
+  },
+  "item": [
+    {
+      "name": "AT-01 — Login com credenciais válidas",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\npm.test(\"AT-01 | HTTP 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"AT-01 | JWT e perfil OWNER\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.token).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(response.role).to.eql(\"OWNER\");\r\n});\r\n\r\nif (pm.response.code === 200) {\r\n    const response = pm.response.json();\r\n\r\n    if (response.token) {\r\n        pm.environment.set(\"tutorToken\", response.token);\r\n    }\r\n}\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{tutorUsername}}\",\r\n  \"password\": \"{{tutorPassword}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DEBUG - Cadastro de Tutor",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DEBUG - Login isolado",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-02 — Login com credenciais inválidas",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\npm.test(\"AT-02 | Credenciais inválidas retornam HTTP 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\npm.test(\"AT-02 | Login inválido não retorna token\", function () {\r\n    const body = pm.response.text();\r\n\r\n    if (body.trim()) {\r\n        const response = pm.response.json();\r\n        pm.expect(response.token).to.be.undefined;\r\n    }\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{tutorUsername}}\",\r\n  \"password\": \"SenhaIncorreta123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T-03 — Cadastro de tutor",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"AT-03 | Cadastro retorna HTTP 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"AT-03 | Resposta sem corpo\", function () {\r\n    pm.expect(pm.response.text()).to.eql(\"\");\r\n});"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\nconst username = \"qa.auto.\" + Date.now();\r\n\r\nfunction gerarCPF() {\r\n    const numeros = Array.from(\r\n        { length: 9 },\r\n        () => Math.floor(Math.random() * 10)\r\n    );\r\n\r\n    // Evita sequências com todos os dígitos iguais\r\n    if (numeros.every(n => n === numeros[0])) {\r\n        numeros[0] = (numeros[0] + 1) % 10;\r\n    }\r\n\r\n    function calcularDigito(base) {\r\n        const pesoInicial = base.length + 1;\r\n\r\n        const soma = base.reduce(\r\n            (total, numero, i) =>\r\n                total + numero * (pesoInicial - i),\r\n            0\r\n        );\r\n\r\n        const resto = (soma * 10) % 11;\r\n        return resto === 10 ? 0 : resto;\r\n    }\r\n\r\n    numeros.push(calcularDigito(numeros));\r\n    numeros.push(calcularDigito(numeros));\r\n\r\n    return numeros.join(\"\");\r\n}\r\n\r\npm.variables.set(\"newTutorUsername\", username);\r\npm.variables.set(\"newTutorDocument\", gerarCPF());\r\n\r\nconsole.log(\"Username de teste:\", username);\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{newTutorUsername}}\",\r\n  \"password\": \"Teste@123456\",\r\n  \"name\": \"Tutor Automatizado QA\",\r\n  \"phone\": \"11988887777\",\r\n  \"document\": \"{{newTutorDocument}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register/owner",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register",
+            "owner"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-04 — Tutor tentando acessar funcionalidade restrita",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\npm.test(\"AT-04 | Tutor recebe HTTP 403 Forbidden\", function () {\r\n    pm.response.to.have.status(403);\r\n});\r\n\r\npm.test(\"AT-04 | Requisição foi autenticada com token\", function () {\r\n    const token = pm.environment.get(\"tutorToken\");\r\n\r\n    pm.expect(token).to.be.a(\"string\").and.not.empty;\r\n});\r\n"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\nconst token = pm.variables.get(\"tutorToken\");\r\n\r\nconsole.log(\"AT-04 | Token definido:\", Boolean(token));\r\nconsole.log(\"AT-04 | Token começa com eyJ:\", token?.startsWith(\"eyJ\"));\r\nconsole.log(\"AT-04 | Tamanho do token:\", token?.length);\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tutorToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Vacina QA Restrita\",\r\n  \"type\": \"VACCINE\",\r\n  \"boosterIntervalDays\": 365\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/catalog-items",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "catalog-items"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-05 — Cadastro de tutor duplicado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"AT-05 | Cadastro duplicado retorna HTTP 409\", function () {\r\n    pm.response.to.have.status(409);\r\n});\r\n\r\npm.test(\"AT-05 | Retorna mensagem de duplicidade\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response).to.have.property(\"error\");\r\n    pm.expect(response.error).to.include(\"Já existe um registro\");\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"qa4.debug01\",\r\n  \"password\": \"Teste@123456\",\r\n  \"name\": \"Tutor QA Duplicado\",\r\n  \"phone\": \"11988887777\",\r\n  \"document\": \"52998224725\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register/owner",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register",
+            "owner"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-06 — Cadastro de pet vinculado ao tuto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"AT-06 | Pet cadastrado com sucesso\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"AT-06 | Resposta contém dados do pet\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.name).to.eql(\"Rex QA\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tutorToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Rex QA\",\r\n  \"birthDate\": \"2022-03-15\",\r\n  \"sex\": \"MALE\",\r\n  \"currentWeight\": 12.5,\r\n  \"breed\": \"Labrador\",\r\n  \"size\": \"MEDIUM\",\r\n  \"ownerId\": 1,\r\n  \"speciesId\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/pets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "pets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-07 — Listagem de pets do tutor (CT-06)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\npm.test(\"AT-07 | Listagem retorna HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"AT-07 | Retorna uma lista de pets\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"AT-07 | Lista contém o pet cadastrado\", function () {\r\n    const response = pm.response.json();\r\n\r\n    const petEncontrado = response.some(\r\n        pet => pet.name === \"Rex QA\"\r\n    );\r\n\r\n    pm.expect(petEncontrado).to.be.true;\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tutorToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/owners/1/pets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "owners",
+            "1",
+            "pets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-08 — Acesso sem autenticação",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\npm.test(\"AT-08 | Acesso sem autenticação retorna HTTP 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\npm.test(\"AT-08 | Requisição não possui Authorization\", function () {\r\n    const authorization = pm.request.headers.get(\"Authorization\");\r\n\r\n    pm.expect(authorization).to.be.undefined;\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/species",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "species"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-09 — Cadastro de veterinário",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const unique = Date.now();\r\n\r\npm.environment.set(\"vetUsername\", \"qa.vet.\" + unique);\r\npm.variables.set(\"vetLicense\", \"CRMV-\" + unique);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"AT-09 | Veterinário cadastrado\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"AT-09 | Cadastro sem corpo\", function () {\r\n    pm.expect(pm.response.text()).to.eql(\"\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{vetUsername}}\",\r\n  \"password\": \"Teste@123456\",\r\n  \"name\": \"Veterinário Automatizado\",\r\n  \"licenseNumber\": \"{{vetLicense}}\",\r\n  \"specialty\": \"Clínica geral\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register/veterinarian",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register",
+            "veterinarian"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-10 — Cadastro duplicado de veterinário",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\npm.test(\"AT-10 | Retorna mensagem de username duplicado\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.error).to.be.a(\"string\");\r\n    pm.expect(response.error.toLowerCase()).to.include(\"username\");\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"qa.vet.duplicado\",\r\n  \"password\": \"Teste@123456\",\r\n  \"name\": \"Veterinário QA\",\r\n  \"licenseNumber\": \"CRMV-QA-DUPLICADO\",\r\n  \"specialty\": \"Clínica geral\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register/veterinarian",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register",
+            "veterinarian"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DEBUG — Listar espécies",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tutorToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/species",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "species"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SETUP — Cadastrar espécie",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tutorToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Cão\",\r\n  \"description\": \"Canis familiaris\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/species",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "species"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AUX — Login Veterinário",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\npm.test(\"Login veterinário retorna HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nif (pm.response.code === 200) {\r\n    const response = pm.response.json();\r\n\r\n    pm.test(\"Usuário possui role VETERINARIAN\", function () {\r\n        pm.expect(response.role).to.eql(\"VETERINARIAN\");\r\n    });\r\n\r\n    pm.test(\"Token JWT foi retornado\", function () {\r\n        pm.expect(response.token).to.be.a(\"string\").and.not.empty;\r\n    });\r\n\r\n    pm.environment.set(\"vetToken\", response.token);\r\n}\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{vetUsername}}\",\r\n  \"password\": \"Teste@123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-11 — Cadastro de clínica válido",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\npm.test(\"AT-11 | Cadastro retorna HTTP 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"AT-11 | Clínica possui ID válido\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.id).to.be.a(\"number\");\r\n    pm.expect(response.id).to.be.above(0);\r\n});\r\n\r\npm.test(\"AT-11 | Dados da clínica estão corretos\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.name).to.eql(\"Clínica Pet Saúde QA\");\r\n\r\n    pm.expect(response.taxId).to.eql(\r\n        pm.environment.get(\"clinicTaxId\")\r\n    );\r\n});\r\n\r\nif (pm.response.code === 201) {\r\n    const response = pm.response.json();\r\n\r\n    pm.environment.set(\"clinicId\", response.id);\r\n}\r\n"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\nconst unique = Date.now().toString();\r\n\r\nconst taxId = unique.padStart(14, \"0\").slice(-14);\r\n\r\npm.environment.set(\"clinicTaxId\", taxId);\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{vetToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n{\r\n  \"name\": \"Clínica Pet Saúde QA\",\r\n  \"taxId\": \"{{clinicTaxId}}\",\r\n  \"phone\": \"1133334444\",\r\n  \"email\": \"contato.qa@petsaude.com\",\r\n  \"address\": \"Rua das Flores, 100\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/clinics",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "clinics"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-12 — Cadastro de clínica com CNPJ inválido",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\n\r\npm.test(\"AT-12 | CNPJ inválido retorna HTTP 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"AT-12 | Retorna erro no campo taxId\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response).to.have.property(\"taxId\");\r\n});\r\n\r\npm.test(\"AT-12 | Mensagem informa o tamanho correto do CNPJ\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.taxId).to.eql(\r\n        \"taxId deve ter 14 dígitos (CNPJ)\"\r\n    );\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{vetToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n{\r\n  \"name\": \"Clínica CNPJ Inválido QA\",\r\n  \"taxId\": \"123\",\r\n  \"phone\": \"1133334444\",\r\n  \"email\": \"invalido.qa@petsaude.com\",\r\n  \"address\": \"Rua das Flores, 200\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/clinics",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "clinics"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AT-13 — Agendamento de consulta veterinária",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\npm.test(\"AT-13 | Agendamento retorna HTTP 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"AT-13 | Consulta possui ID válido\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.id).to.be.a(\"number\");\r\n    pm.expect(response.id).to.be.above(0);\r\n});\r\n\r\npm.test(\"AT-13 | Consulta criada com status SCHEDULED\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.status).to.eql(\"SCHEDULED\");\r\n});\r\n\r\npm.test(\"AT-13 | Consulta vinculada ao pet correto\", function () {\r\n    const response = pm.response.json();\r\n\r\n    pm.expect(response.petId).to.eql(\r\n        Number(pm.environment.get(\"petId\"))\r\n    );\r\n});\r\n\r\nif (pm.response.code === 201) {\r\n    const response = pm.response.json();\r\n    pm.environment.set(\"appointmentId\", response.id);\r\n}\r\n"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\r\nconst date = new Date();\r\ndate.setUTCDate(date.getUTCDate() + 7);\r\n\r\npm.environment.set(\r\n    \"appointmentDate\",\r\n    date.toISOString().split(\"T\")[0]\r\n);\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{vetToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"appointmentDate\": \"2026-10-31\",\r\n  \"type\": \"ROUTINE\",\r\n  \"reason\": \"Consulta veterinária de rotina - teste automatizado\",\r\n  \"petId\": 3,\r\n  \"clinicId\": 1\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
