@@ -122,13 +122,14 @@ ClyvoTests/
 
 🔗 6. Links do Projeto
 
-Azure Boards: ClyvoCareScrum
+Azure Boards: [ClyvoCareScrum](https://dev.azure.com/RM563509/ClyvoCareScrum/_workitems/recentlyupdated/)
 
-Repositório da API: ClyvoCareSC
+Repositório da API: [ClyvoCareSC](https://github.com/VitoriaMaglio/ClyvoCareSC.git)
 
 Repositório de Testes: ClyvoCareSCTests
 
-Vídeo explicativo: https://www.youtube.com/watch?v=xcwvwPT6sRg 
+Vídeo explicativo: [https://www.youtube.com/watch?v=xcwvwPT6sRg ](https://youtu.be/xcwvwPT6sRg?is=szFKm2j4Xc2H0Pdg)
+
 Projeto acadêmico — FIAP | Análise e Desenvolvimento de Sistemas
 
 Sprint 4 — Testes de Software
