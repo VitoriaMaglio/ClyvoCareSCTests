@@ -128,6 +128,7 @@ Repositório da API: [ClyvoCareSC](https://github.com/VitoriaMaglio/ClyvoCareSC.
 
 Link da API na nuvem para testes: 	https://clyvocaresc.onrender.com
 Usar esse link acima na variável de ambiente baseUrl no Postman -> Assim é possível realizar os testes automatizados sem precisar ter a aplicação rodando localmente.
+<img width="1896" height="715" alt="image" src="https://github.com/user-attachments/assets/8ba4f33d-440b-40e2-b009-77d6d21a492a" />
 
 Repositório de Testes: ClyvoCareSCTests
 
