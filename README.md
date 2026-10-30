@@ -128,6 +128,7 @@ Repositório da API: ClyvoCareSC
 
 Repositório de Testes: ClyvoCareSCTests
 
+Vídeo explicativo: https://www.youtube.com/watch?v=xcwvwPT6sRg 
 Projeto acadêmico — FIAP | Análise e Desenvolvimento de Sistemas
 
 Sprint 4 — Testes de Software
