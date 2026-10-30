@@ -82,7 +82,7 @@ Resultado: todos os cenários automatizados foram executados com sucesso, sem fa
 
 Pré-requisitos:
 
-API ClyvoCare e suas dependências em execução;
+API ClyvoCare e suas dependências em execução localmente ou usar link da aplicação no Render;
 
 Postman instalado;
 
@@ -90,7 +90,7 @@ Ambiente da aplicação configurado;
 
 Credenciais válidas para os usuários de teste.
 
-Passo a passo:
+Passo a passo (Links no tópico 6):
 
 Inicie a API ClyvoCare e configure as variáveis de ambiente necessárias.
 
@@ -125,6 +125,9 @@ ClyvoTests/
 Azure Boards: [ClyvoCareScrum](https://dev.azure.com/RM563509/ClyvoCareScrum/_workitems/recentlyupdated/)
 
 Repositório da API: [ClyvoCareSC](https://github.com/VitoriaMaglio/ClyvoCareSC.git)
+
+Link da API na nuvem para testes: 	https://clyvocaresc.onrender.com
+Usar esse link acima na variável de ambiente baseUrl no Postman -> Assim é possível realizar os testes automatizados sem precisar ter a aplicação rodando localmente.
 
 Repositório de Testes: ClyvoCareSCTests
 
