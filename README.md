@@ -140,7 +140,11 @@ Projeto acadêmico — FIAP | Análise e Desenvolvimento de Sistemas
 
 Nome	RM
 Vitória Valentina Maglio	RM 563509
+
 Marina Tamagnini Magalhães	RM 561786
+
 Mateus Granja dos Santos	RM 564930
-Felipe Maglio Filho	RM 563512
+
+Felipe Maglio Filho	       RM 563512
+
 João Pedro Bitencourt	RM 564339
