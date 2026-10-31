@@ -136,4 +136,11 @@ Vídeo explicativo: [https://www.youtube.com/watch?v=xcwvwPT6sRg ](https://youtu
 
 Projeto acadêmico — FIAP | Análise e Desenvolvimento de Sistemas
 
-Sprint 4 — Testes de Software
+👨‍💻 Integrantes
+
+Nome	RM
+Vitória Valentina Maglio	RM 563509
+Marina Tamagnini Magalhães	RM 561786
+Mateus Granja dos Santos	RM 564930
+Felipe Maglio Filho	RM 563512
+João Pedro Bitencourt	RM 564339
